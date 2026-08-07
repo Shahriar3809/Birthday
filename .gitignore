@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output (rebuilt at deploy time)
+client/dist/
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Runtime data
+server/wishes.json
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

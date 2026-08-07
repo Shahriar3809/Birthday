@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --font-bengali: "Noto Serif Bengali", "Playfair Display", serif;
+  --font-display: "Playfair Display", "Noto Serif Bengali", serif;
+
+  /* Deep maroon / wine — the primary warm dark background */
+  --color-maroon-950: #38080c;
+  --color-maroon-900: #440d10;
+  --color-maroon-800: #571414;
+  --color-maroon-700: #6e1c1c;
+  --color-maroon-600: #852525;
+
+  /* Rich rose red — the accent scale (overrides Tailwind's default rose) */
+  --color-rose-100: #fbe6e8;
+  --color-rose-200: #f6c9ce;
+  --color-rose-300: #ee9fa8;
+  --color-rose-400: #e26d7c;
+  --color-rose-500: #c41e3a;
+  --color-rose-600: #a81a34;
+  --color-rose-700: #8c132c;
+  --color-rose-800: #6e0f23;
+  --color-rose-900: #520a19;
+  --color-rose-950: #380611;
+
+  /* Soft blush rose — secondary accent / text on dark backgrounds */
+  --color-blush-100: #fbe9e9;
+  --color-blush-200: #f7d4d4;
+  --color-blush-300: #f4c2c2;
+  --color-blush-400: #e9a0a0;
+
+  /* Gold — tertiary, decorative details only */
+  --color-gold-200: #f0e2b6;
+  --color-gold-300: #e3c565;
+  --color-gold-400: #d4af37;
+  --color-gold-500: #b8912c;
+  --color-gold-600: #97752a;
+
+  /* Warm cream — body text on dark maroon */
+  --color-cream: #fff5f0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: #38080c;
+  color: #fff5f0;
+  font-family: var(--font-bengali);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+  -webkit-tap-highlight-color: transparent;
+}
