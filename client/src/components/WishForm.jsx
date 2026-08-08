@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 export default function WishForm() {
+  const [name, setName] = useState('')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
 
@@ -13,7 +14,7 @@ export default function WishForm() {
       const res = await fetch('/api/wish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: message.trim() }),
+        body: JSON.stringify({ name: name.trim(), message: message.trim() }),
       })
       if (!res.ok) throw new Error('bad request')
       setStatus('success')
@@ -25,6 +26,7 @@ export default function WishForm() {
   const reset = () => {
     setStatus('idle')
     setMessage('')
+    setName('')
   }
 
   return (
@@ -74,13 +76,21 @@ export default function WishForm() {
               তোমার একটা কথা লিখে যাও
             </p>
 
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={80}
+              placeholder="তোমার নাম (ঐচ্ছিক)"
+              className="font-bengali mt-5 w-full rounded-2xl border border-rose-300/30 bg-maroon-900/60 px-4 py-3 text-cream/95 placeholder-blush-300/40 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-400/25"
+            />
+
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
               maxLength={2000}
               placeholder="এখানে লিখো..."
-              className="font-bengali mt-5 w-full resize-none rounded-2xl border border-rose-300/30 bg-maroon-900/60 px-4 py-3 text-cream/95 placeholder-blush-300/40 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-400/25"
+              className="font-bengali mt-4 w-full resize-none rounded-2xl border border-rose-300/30 bg-maroon-900/60 px-4 py-3 text-cream/95 placeholder-blush-300/40 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-400/25"
             />
 
             <div className="mt-4 flex items-center justify-between">

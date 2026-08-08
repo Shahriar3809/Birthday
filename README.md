@@ -5,7 +5,7 @@ A single-page birthday surprise for Shanta — one continuous scroll experience 
 ## Tech Stack
 
 - **Client**: React + Vite + Tailwind CSS v4 + Framer Motion
-- **Server**: Node.js + Express (serves the built client and the `/api/wish` endpoint)
+- **Server**: Node.js + Express + MongoDB Atlas (wishes stored in MongoDB)
 - **Monorepo**: npm workspaces (`client/`, `server/`)
 
 ## Prerequisites
@@ -18,8 +18,8 @@ A single-page birthday surprise for Shanta — one continuous scroll experience 
 # 1. Install all workspace dependencies
 npm install
 
-# 2. Configure the environment (optional — PORT defaults to 5000)
-cp .env.example .env   # then edit if you want a different port
+# 2. Configure the environment (copy the example, then fill in the values — see sections below)
+cp .env.example .env
 ```
 
 ## Running Locally
@@ -56,12 +56,13 @@ shanta-birthday/
 │   │   ├── components/  # UI components (Hero, Countdown, Memories, Reasons, ...)
 │   │   ├── data/        # memories.js, reasons.js (edit the content here)
 │   │   ├── assets/      # photos (shanta.jpg, memories/*.jpg)
+│   │   ├── pages/       # Home, ComingSoon, AdminWishes (secret)
 │   │   └── index.css    # theme tokens (Tailwind v4 @theme)
 │   ├── public/          # favicon, media (music, voice note)
 │   └── dist/            # production build (generated, gitignored)
 └── server/              # Express server
-    ├── src/index.js     # static serving + /api/wish + SPA fallback
-    └── wishes.json      # saved wishes (runtime data, gitignored)
+    ├── src/index.js     # static serving + /api/wish + /api/admin/wishes + SPA fallback
+    └── package.json     # deps: express, mongoose, dotenv, cors
 ```
 
 ## Editing Content
@@ -73,9 +74,31 @@ shanta-birthday/
 
 ## Environment Variables
 
-| Variable | Default | Description |
-| -------- | ------- | ----------- |
-| `PORT`   | `5000`  | Port the server listens on. Render/Railway/Heroku set this automatically. |
+| Variable        | Default   | Description |
+| --------------- | --------- | ----------- |
+| `PORT`          | `5000`    | Port the server listens on. Render/Railway/Heroku set this automatically. |
+| `MONGODB_URI`   | —         | MongoDB Atlas connection string. Required for the wish wall. |
+| `ADMIN_PASSWORD`| —         | Password for the secret `/admin-wishes` page. |
+
+### 1. MongoDB Atlas (free tier) — for the wish wall
+
+1. Go to [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas) and sign up (free).
+2. Create a **free (M0) cluster** — picks the region/cloud, then click **Create**.
+3. In **Database Access**, add a database user: choose a username + password, and grant **Read and write to any database**. Save these.
+4. In **Network Access**, click **Add IP Address** → **Allow access from anywhere** (`0.0.0.0/0`). This is fine for a free-tier personal project.
+5. In your cluster, click **Connect** → **Connect your application** → copy the connection string. It looks like:
+
+   ```
+   mongodb+srv://<dbUser>:<dbPassword>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+   ```
+
+6. Replace `<dbUser>`/`<dbPassword>` with your database user's credentials, and optionally add a database name after the host (e.g. `.../shanta?retryWrites=...`). Put the result in `MONGODB_URI`.
+
+### 2. The secret `/admin-wishes` page
+
+- Visit `https://<your-site>/admin-wishes` and enter `ADMIN_PASSWORD`.
+- Once logged in, it shows every wish, newest first, with a Bengali-formatted timestamp and a **↻ রিফ্রেশ** button to reload the list without re-entering the password.
+- It is **not linked anywhere** in the site's UI — only accessible by typing the URL directly, so Shanta won't stumble on it.
 
 ## Deploying (Render)
 
@@ -85,7 +108,9 @@ shanta-birthday/
    - **Build Command**: `npm install && npm run build`
    - **Start Command**: `npm start`
    - **Node Version**: `22`
-4. Deploy and open the generated `*.onrender.com` URL.
+4. Open the **Environment** tab and add the variables: `MONGODB_URI` and `ADMIN_PASSWORD` (do **not** add `PORT` — Render sets it automatically).
+5. Deploy and open the generated `*.onrender.com` URL.
+6. Test the wish wall, then visit `https://<your-site>/admin-wishes` with your `ADMIN_PASSWORD` to confirm wishes appear.
 
 ## License
 

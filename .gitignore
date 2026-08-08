@@ -10,9 +10,6 @@ dist/
 .env.*
 !.env.example
 
-# Runtime data
-server/wishes.json
-
 # Logs
 *.log
 
