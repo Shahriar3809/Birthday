@@ -19,7 +19,7 @@ export default function Reasons() {
     >
       <FloatingParticles count={8} />
 
-      <div className="relative z-10 mx-auto max-w-5xl px-6">
+      <div className="relative z-10 mx-auto max-w-3xl px-6">
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -56,7 +56,7 @@ export default function Reasons() {
         </p>
 
         <motion.div
-          className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 md:mt-20 md:grid-cols-3 lg:grid-cols-4"
+          className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 md:mt-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}

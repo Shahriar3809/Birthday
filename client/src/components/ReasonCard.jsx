@@ -5,10 +5,6 @@ const CARD_STYLES = [
   { front: 'from-maroon-700 to-maroon-900', icon: 'text-gold-400' },
   { front: 'from-rose-700 to-maroon-900', icon: 'text-blush-300' },
   { front: 'from-rose-500 to-rose-700', icon: 'text-cream' },
-  { front: 'from-maroon-800 to-maroon-950', icon: 'text-rose-300' },
-  { front: 'from-rose-600 to-maroon-800', icon: 'text-gold-300' },
-  { front: 'from-maroon-700 to-rose-800', icon: 'text-blush-200' },
-  { front: 'from-rose-500 to-maroon-900', icon: 'text-cream' },
 ]
 
 export default function ReasonCard({ reason, index, active, onFlip }) {
@@ -49,9 +45,9 @@ export default function ReasonCard({ reason, index, active, onFlip }) {
         </div>
 
         <div
-          className="absolute inset-0 flex items-center justify-center rounded-3xl bg-gradient-to-br from-maroon-900 to-maroon-950 px-5 shadow-md ring-1 ring-rose-300/25 [transform:rotateY(180deg)] [backface-visibility:hidden]"
+          className="absolute inset-0 flex items-center justify-center rounded-3xl bg-gradient-to-br from-maroon-900 to-maroon-950 px-3 shadow-md ring-1 ring-rose-300/25 [transform:rotateY(180deg)] [backface-visibility:hidden] sm:px-5"
         >
-          <p className="font-bengali text-center text-base leading-relaxed text-blush-200/90 sm:text-lg">
+          <p className="font-bengali text-center text-sm leading-relaxed text-blush-200/90 sm:text-base">
             {reason.text}
           </p>
         </div>

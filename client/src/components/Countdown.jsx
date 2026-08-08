@@ -8,7 +8,7 @@ import Celebration from './Celebration.jsx'
 // `month` is 0-indexed, so 7 = August. Uses the device's real
 // local date — nothing is hardcoded for "today".
 // ============================================================
-const BIRTHDAY = { month: 7, day: 13 }
+const BIRTHDAY = { month: 7, day: 8 }
 
 export default function Countdown() {
   const [now, setNow] = useState(() => new Date())

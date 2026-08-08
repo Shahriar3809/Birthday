@@ -1,15 +1,10 @@
-import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { MEMORIES } from '../data/memories.js'
-import PhotoCard from './PhotoCard.jsx'
-import Lightbox from './Lightbox.jsx'
+import { motion } from 'framer-motion'
+import { FEATURED_MEMORY } from '../data/memories.js'
 import FloatingParticles from './FloatingParticles.jsx'
 
 const EASE = [0.22, 1, 0.36, 1]
 
 export default function Memories() {
-  const [selected, setSelected] = useState(null)
-
   return (
     <section
       id="memories"
@@ -50,24 +45,38 @@ export default function Memories() {
           />
         </div>
 
-        <p className="font-bengali mt-5 text-sm text-blush-300/75 sm:text-base">
-          ছবিতে ট্যাপ করে দেখো —
-        </p>
-
-        <div
-          className="mt-14 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mt-20 md:grid md:grid-cols-3 md:gap-x-10 md:gap-y-16 md:overflow-visible md:pb-0"
+        <motion.figure
+          initial={{ opacity: 0, scale: 0.92, y: 24 }}
+          whileInView={{ opacity: 1, scale: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.9, ease: EASE }}
+          className="relative mx-auto mt-12 w-full max-w-xs sm:max-w-sm md:max-w-md"
         >
-          {MEMORIES.map((memory, i) => (
-            <div key={i} className="w-[75vw] shrink-0 snap-center sm:w-[60vw] md:w-auto">
-              <PhotoCard memory={memory} index={i} onOpen={setSelected} />
-            </div>
-          ))}
-        </div>
-      </div>
+          <motion.div
+            aria-hidden
+            className="absolute -inset-10 rounded-full"
+            style={{ background: 'radial-gradient(circle, rgba(196,30,58,0.4) 0%, rgba(212,175,55,0.15) 55%, transparent 75%)' }}
+            animate={{ opacity: [0.5, 0.85, 0.5], scale: [1, 1.08, 1] }}
+            transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
-      <AnimatePresence>
-        {selected && <Lightbox memory={selected} onClose={() => setSelected(null)} />}
-      </AnimatePresence>
+          <div className="relative z-10 rounded-[2rem] bg-gradient-to-br from-gold-400/70 via-rose-400/50 to-gold-400/70 p-1.5 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+            <div className="overflow-hidden rounded-[1.65rem] ring-4 ring-maroon-900/90">
+              <img
+                src={FEATURED_MEMORY.src}
+                alt={FEATURED_MEMORY.caption}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[4/5] w-full object-cover"
+              />
+            </div>
+          </div>
+
+          <figcaption className="relative z-10 mt-5 font-bengali text-base text-blush-200/85 sm:text-lg">
+            {FEATURED_MEMORY.caption}
+          </figcaption>
+        </motion.figure>
+      </div>
     </section>
   )
 }
