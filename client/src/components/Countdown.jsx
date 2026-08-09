@@ -2,13 +2,7 @@ import { useEffect, useState } from 'react'
 import FloatingParticles from './FloatingParticles.jsx'
 import CountdownTimer from './CountdownTimer.jsx'
 import Celebration from './Celebration.jsx'
-
-// ============================================================
-// ✏️ EDIT ME — Shanta's birthday.
-// `month` is 0-indexed, so 7 = August. Uses the device's real
-// local date — nothing is hardcoded for "today".
-// ============================================================
-const BIRTHDAY = { month: 7, day: 8 }
+import { getBirthdayTarget, isBirthdayReached } from '../data/birthday.js'
 
 export default function Countdown() {
   const [now, setNow] = useState(() => new Date())
@@ -18,8 +12,8 @@ export default function Countdown() {
     return () => clearInterval(id)
   }, [])
 
-  const target = new Date(now.getFullYear(), BIRTHDAY.month, BIRTHDAY.day)
-  const isBirthday = target - now <= 0
+  const target = getBirthdayTarget(now)
+  const isBirthday = isBirthdayReached(now)
 
   return (
     <section
