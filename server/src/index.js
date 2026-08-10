@@ -53,8 +53,29 @@ function serializeWish(doc) {
   }
 }
 
+// ============================================================
+// Settings — singleton document for app-wide configuration
+// (currently just the birthday moment). key:'singleton' keeps
+// at most one document; app falls back to the static config
+// in the client if none exists yet.
+// ============================================================
+const Settings = mongoose.model(
+  'Settings',
+  new mongoose.Schema({
+    key: { type: String, default: 'singleton', unique: true },
+    birthdayDate: { type: Date },
+    updatedAt: { type: Date, default: Date.now },
+  }),
+)
+
 function isDbConnected() {
   return mongoose.connection.readyState === 1
+}
+
+// Shared admin guard — password from env, passed via x-admin-password header.
+function isAdminRequest(req) {
+  const adminPassword = process.env.ADMIN_PASSWORD
+  return !!adminPassword && req.get('x-admin-password') === adminPassword
 }
 
 // ============================================================
@@ -90,16 +111,46 @@ app.post('/api/wish', async (req, res) => {
 
 // Admin: list wishes (password from env). Simple header auth — good enough here.
 app.get('/api/admin/wishes', async (req, res) => {
-  const adminPassword = process.env.ADMIN_PASSWORD
-  if (!adminPassword) return res.status(503).json({ error: 'ADMIN_PASSWORD not configured' })
-
-  if (req.get('x-admin-password') !== adminPassword) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
+  if (!process.env.ADMIN_PASSWORD) return res.status(503).json({ error: 'ADMIN_PASSWORD not configured' })
+  if (!isAdminRequest(req)) return res.status(401).json({ error: 'Unauthorized' })
   if (!isDbConnected()) return res.status(503).json({ error: 'Database not connected' })
 
   const wishes = await Wish.find().sort({ submittedAt: -1 }).lean()
   res.json(wishes.map(serializeWish))
+})
+
+// Public: read the server-configured birthday moment (ISO string or null).
+// Client falls back to its static data/birthday.js config when this is null/unreachable.
+app.get('/api/settings/birthday', async (req, res) => {
+  if (!isDbConnected()) return res.status(503).json({ error: 'Database not connected' })
+
+  const settings = await Settings.findOne({ key: 'singleton' }).lean()
+  res.json({ birthdayDate: settings?.birthdayDate ? settings.birthdayDate.toISOString() : null })
+})
+
+// Admin: set the birthday moment (an ISO date-time string).
+app.put('/api/admin/settings/birthday', async (req, res) => {
+  if (!process.env.ADMIN_PASSWORD) return res.status(503).json({ error: 'ADMIN_PASSWORD not configured' })
+  if (!isAdminRequest(req)) return res.status(401).json({ error: 'Unauthorized' })
+  if (!isDbConnected()) return res.status(503).json({ error: 'Database not connected' })
+
+  const raw = req.body?.birthdayDate
+  const date = new Date(raw)
+  if (!raw || Number.isNaN(date.getTime())) {
+    return res.status(400).json({ error: 'birthdayDate must be a valid date string' })
+  }
+
+  try {
+    await Settings.findOneAndUpdate(
+      { key: 'singleton' },
+      { key: 'singleton', birthdayDate: date, updatedAt: new Date() },
+      { upsert: true },
+    )
+    res.json({ birthdayDate: date.toISOString() })
+  } catch (err) {
+    console.error('Failed to save settings:', err)
+    res.status(500).json({ error: 'Could not save settings' })
+  }
 })
 
 // Any unknown /api route returns JSON 404 (not the SPA fallback)

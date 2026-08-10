@@ -54,14 +54,14 @@ shanta-birthday/
 ├── client/              # React app (Vite)
 │   ├── src/
 │   │   ├── components/  # UI components (Hero, Countdown, Memories, Reasons, ...)
-│   │   ├── data/        # memories.js, reasons.js (edit the content here)
+│   │   ├── data/        # memories.js, reasons.js, birthday.js (edit the content here)
 │   │   ├── assets/      # photos (shanta.jpg, memories/*.jpg)
 │   │   ├── pages/       # Home, ComingSoon, AdminWishes (secret)
 │   │   └── index.css    # theme tokens (Tailwind v4 @theme)
 │   ├── public/          # favicon, media (music, voice note)
 │   └── dist/            # production build (generated, gitignored)
 └── server/              # Express server
-    ├── src/index.js     # static serving + /api/wish + /api/admin/wishes + SPA fallback
+    ├── src/index.js     # static serving + /api/wish + /api/admin/wishes + /api/settings/birthday + SPA fallback
     └── package.json     # deps: express, mongoose, dotenv, cors
 ```
 
@@ -69,6 +69,7 @@ shanta-birthday/
 
 - **Memories**: `client/src/data/memories.js` — set `FEATURED_MEMORY.src` (put photos in `client/src/assets/memories/`) and `caption`.
 - **Reasons**: `client/src/data/reasons.js` — exactly 4 cards, each with `icon` and `text`.
+- **Birthday / countdown**: `client/src/data/birthday.js` is the *fallback* config (`month` is 0-indexed, `hour`/`minute` optional). The exact moment can be set from the admin page (`/admin-wishes`) — that value is stored in MongoDB and takes priority; the fallback is only used when nothing is saved yet or the DB is unreachable.
 - **Theme colors**: `client/src/index.css` (maroon, rose, blush, gold, cream tokens).
 - **Audio**: replace files in `client/public/media/` (keep the same filenames).
 
@@ -98,6 +99,7 @@ shanta-birthday/
 
 - Visit `https://<your-site>/admin-wishes` and enter `ADMIN_PASSWORD`.
 - Once logged in, it shows every wish, newest first, with a Bengali-formatted timestamp and a **↻ রিফ্রেশ** button to reload the list without re-entering the password.
+- The **জন্মদিনের সময় সেট করো** card lets you pick the exact moment the countdown gate opens (saved to MongoDB). If nothing is saved, the static `data/birthday.js` config is used.
 - It is **not linked anywhere** in the site's UI — only accessible by typing the URL directly, so Shanta won't stumble on it.
 
 ## Deploying (Render)

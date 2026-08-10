@@ -8,7 +8,7 @@ import CountdownGate from './components/CountdownGate.jsx'
 import MusicToggle from './components/MusicToggle.jsx'
 import BrandBadge from './components/BrandBadge.jsx'
 import ScrollProgress from './components/ScrollProgress.jsx'
-import { getBirthdayTarget, isBirthdayReached } from './data/birthday.js'
+import { getBirthdayTarget } from './data/birthday.js'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -16,12 +16,38 @@ function Gate() {
   const { pathname } = useLocation()
   const isAdminRoute = pathname.startsWith('/admin-wishes')
 
-  // Ticked once per second. Initialized to "now" so that:
-  //  - if the birthday has already started on first load, hasUnlocked
-  //    starts true and the gate NEVER renders (no brief flash);
-  //  - otherwise the gate shows and the interval flips it live at the target moment.
+  // Ticked once per second so the gate can flip open live at the target moment.
   const [now, setNow] = useState(() => new Date())
-  const [hasUnlocked, setHasUnlocked] = useState(() => isBirthdayReached(new Date()))
+  // The countdown target. Start from the static data/birthday.js config, then
+  // adopt the server-configured moment once /api/settings/birthday responds.
+  const [target, setTarget] = useState(() => getBirthdayTarget(new Date()))
+  const [targetReady, setTargetReady] = useState(false)
+  const [hasUnlocked, setHasUnlocked] = useState(false)
+
+  // Fetch the DB-driven birthday once. On failure (or nothing set) we keep the
+  // static config — the gate must never break because the DB is unreachable.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      let next = null
+      try {
+        const res = await fetch('/api/settings/birthday')
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.birthdayDate) next = new Date(data.birthdayDate)
+        }
+      } catch {
+        // fall back to the static config below
+      }
+      if (cancelled) return
+      setTarget(next ?? getBirthdayTarget(new Date()))
+      setTargetReady(true)
+      setHasUnlocked((next ?? getBirthdayTarget(new Date())) - new Date() <= 0)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (hasUnlocked) return
@@ -31,12 +57,12 @@ function Gate() {
 
   // Live unlock: the instant now >= target, flip the state (no refresh needed).
   useEffect(() => {
-    if (!hasUnlocked && isBirthdayReached(now)) {
+    if (targetReady && !hasUnlocked && target - now <= 0) {
       setHasUnlocked(true)
     }
-  }, [now, hasUnlocked])
+  }, [now, hasUnlocked, target, targetReady])
 
-  const showGate = !hasUnlocked && !isAdminRoute
+  const showGate = targetReady && !hasUnlocked && !isAdminRoute
 
   // Lock body scroll while the gate is up so nothing behind it can scroll.
   useEffect(() => {
@@ -54,7 +80,10 @@ function Gate() {
     }
   }, [showGate])
 
-  const target = getBirthdayTarget(now)
+  // While the DB-driven target is still loading, render nothing on public
+  // routes so birthday content can never leak even briefly; the admin route
+  // is exempt (it is always reachable).
+  if (!targetReady && !isAdminRoute) return null
 
   return (
     <AnimatePresence mode="wait">
