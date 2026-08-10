@@ -10,7 +10,7 @@ const EASE = [0.22, 1, 0.36, 1]
 const HEADING = [
   { text: 'আজকে', className: 'text-cream/95' },
   { text: 'তোমার', className: 'text-cream/95' },
-  { text: 'দিন!', className: 'font-display italic text-rose-400' },
+  { text: 'জন্মদিন!', className: 'font-display italic text-rose-400' },
   { text: '🎉', className: '' },
 ]
 
@@ -71,7 +71,7 @@ export default function Celebration() {
         transition={{ duration: 1, ease: 'easeOut', delay: 1.3 }}
         className="font-bengali mx-auto mt-4 max-w-md text-base text-blush-200/80 sm:text-lg"
       >
-        আজ শুধু তোমার দিন নয় — আজ আমার গর্বের দিন, তোমাকে আমার বলা হয় বলে।
+        আজ এই দিনে আমার চাওয়ার তালিকায় অনেক কিছু থাকতে পারত, কিন্তু আছে শুধু একটাই—তুমি ভালো থাকো। অনেক বেশি ভালো থাকো। তোমার জীবনে যতটুকু সুখ প্রাপ্য, তার চেয়েও বেশি সুখ যেন তোমার কাছে আসে।
       </motion.p>
     </div>
   )

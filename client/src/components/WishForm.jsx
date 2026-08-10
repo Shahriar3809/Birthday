@@ -73,7 +73,7 @@ export default function WishForm() {
             className="rounded-3xl border border-rose-300/20 bg-maroon-800/55 p-6 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-8"
           >
             <p className="font-bengali text-center text-lg text-blush-100/90 sm:text-xl">
-              তোমার একটা কথা লিখে যাও
+              আমাকে কিছু লিখ..
             </p>
 
             <input

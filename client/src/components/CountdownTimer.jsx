@@ -70,7 +70,7 @@ export default function CountdownTimer({ target, now, large = false }) {
           large ? 'text-3xl sm:text-5xl md:text-6xl' : 'text-3xl sm:text-4xl md:text-5xl'
         }`}
       >
-        তোমার একটা স্পেশাল দিনের অপেক্ষায়...
+        একটা স্পেশাল দিনের অপেক্ষায়...
       </h2>
 
       <div className="mx-auto mt-5 h-[3px] w-56 overflow-hidden rounded-full bg-rose-900/60">
@@ -103,7 +103,7 @@ export default function CountdownTimer({ target, now, large = false }) {
       </div>
 
       <p className={`font-bengali mt-8 text-blush-300/75 ${large ? 'text-base sm:text-lg' : 'text-sm sm:text-base'}`}>
-        ঠিক এই দিনটা — {dateLabel}
+        {dateLabel}
       </p>
     </motion.div>
   )

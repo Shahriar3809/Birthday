@@ -8,5 +8,5 @@ import memory01 from '../assets/memories/memory-01.jpg'
 // ============================================================
 export const FEATURED_MEMORY = {
   src: memory01,
-  caption: 'আমাদের সবচেয়ে প্রিয় মুহূর্ত — শুধু তুমি আর আমি',
+  caption: 'আমার সবচেয়ে প্রিয় মুহূর্ত — তুমি আর আমি',
 }

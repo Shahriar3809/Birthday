@@ -21,7 +21,7 @@ const MEDIA = {
 // ✏️ EDIT ME — the closing line.
 // ============================================================
 const CLOSING_LINE =
-  'তুমি আমার জীবনের সবচেয়ে সুন্দর অধ্যায় — আমি আর তুমি। এই জন্মদিনে, আর চিরকাল, শুধু তোমার পাশে।'
+  'তুমি আমার জীবনের সবচেয়ে সুন্দর অধ্যায়-। আমার নিজের ভুলেই সেই সুন্দর অধ্যায়টা হারিয়ে ফেলেছি। হয়তো তোমাকে হারানোর কষ্টটা আমার প্রাপ্যই ছিল। তবুও আজ তোমার জন্মদিনে কোনো দাবি নেই, শুধু একটাই চাওয়া—অনেক বেশি ভালো থাকো তুমি। আর মনে রেখো, আমার সবচেয়ে সুন্দর চাওয়াটা আজও তুমি। আমি এখনো তোমার অপেক্ষায়....'
 
 const SHINE_WIDTH = 'w-1/4'
 
@@ -31,10 +31,13 @@ export default function Finale() {
   return (
     <section
       id="finale"
-      className="relative overflow-hidden py-24 text-center sm:py-32"
+      className="relative py-24 text-center sm:py-32"
       style={{ background: 'linear-gradient(180deg, #852525 0%, #5e1616 55%, #440d10 100%)' }}
     >
-      <FloatingParticles count={10} />
+      {/* Decoration layer — overflow is clipped ONLY here, never on the content */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <FloatingParticles count={10} />
+      </div>
 
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6">
         <motion.p
@@ -101,7 +104,7 @@ export default function Finale() {
         </div>
 
         <p className="font-display mt-20 text-sm italic text-gold-400/80 sm:text-base">
-          made with ❤️, just for you
+          Made with ❤️ by Shahriar — Just for You
         </p>
       </div>
     </section>
