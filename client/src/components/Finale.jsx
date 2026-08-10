@@ -14,14 +14,14 @@ const EASE = [0.22, 1, 0.36, 1]
 const MEDIA = {
   type: 'audio',
   src: '/media/voice-note.wav',
-  title: 'তোমার জন্য একটু গান',
+  title: 'শান্তা, আবারও জন্মদিনের শুভেচ্ছা',
 }
 
 // ============================================================
 // ✏️ EDIT ME — the closing line.
 // ============================================================
 const CLOSING_LINE =
-  'তুমি আমার জীবনের সবচেয়ে সুন্দর অধ্যায়-। আমার নিজের ভুলেই সেই সুন্দর অধ্যায়টা হারিয়ে ফেলেছি। হয়তো তোমাকে হারানোর কষ্টটা আমার প্রাপ্যই ছিল। তবুও আজ তোমার জন্মদিনে কোনো দাবি নেই, শুধু একটাই চাওয়া—অনেক বেশি ভালো থাকো তুমি। আর মনে রেখো, আমার সবচেয়ে সুন্দর চাওয়াটা আজও তুমি। আমি এখনো তোমার অপেক্ষায়....'
+  'তুমি আমার জীবনের সবচেয়ে সুন্দর অধ্যায়-। আমার নিজের ভুলেই সেই সুন্দর অধ্যায়টা হারিয়ে ফেলেছি। হয়তো তোমাকে হারানোর কষ্টটা আমার প্রাপ্যই ছিল। তবুও আজ তোমার জন্মদিনে কোনো দাবি নেই, শুধু চাই— অনেক বেশি ভালো থাকো তুমি। আমার একমাত্র চাওয়া- শুধুই তুমি। আমি এখনো তোমার অপেক্ষায়....'
 
 const SHINE_WIDTH = 'w-1/4'
 
@@ -78,8 +78,8 @@ export default function Finale() {
           />
 
           <div className="relative overflow-hidden rounded-xl">
-            <h2 className="bg-gradient-to-r from-rose-400 via-gold-400 to-rose-300 bg-clip-text text-3xl font-bold text-transparent sm:text-5xl md:text-6xl">
-              Happy Birthday Shanta
+            <h2 className="bg-gradient-to-r from-rose-400  via-gold-400 to-rose-300 bg-clip-text text-3xl font-bold text-transparent sm:text-5xl md:text-6xl">
+              Happy Birthday Shanta ❤️
             </h2>
             <motion.div
               aria-hidden
@@ -94,7 +94,7 @@ export default function Finale() {
         <div className="mt-8 max-w-xl">
           <WordReveal
             words={closingWords}
-            className="font-bengali text-lg leading-loose text-blush-200/85 sm:text-xl"
+            className="font-bengali text-lg mt-7 leading-loose text-blush-200/85 sm:text-xl"
             stagger={0.045}
           />
         </div>

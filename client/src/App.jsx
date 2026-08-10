@@ -99,20 +99,33 @@ function Gate() {
       ) : (
         <motion.div
           key="site"
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.9, ease: EASE }}
           className="min-h-svh"
         >
+          {/* Content scale-in lives on an INNER wrapper. The fixed chrome
+              below (progress bar, badge, music) must never sit under a
+              transform: a `transform` on any ancestor makes `position:
+              fixed` anchor to that ancestor instead of the viewport. Opacity
+              alone does not create a containing block, so it is safe here. */}
+          <motion.div
+            initial={{ scale: 0.97 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.9, ease: EASE }}
+            className="min-h-svh"
+          >
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/love-story" element={<ComingSoon title="Our Story" />} />
+              <Route path="/gallery" element={<ComingSoon title="Gallery" />} />
+              <Route path="/wishes" element={<ComingSoon title="Wishes" />} />
+              <Route path="/admin-wishes" element={<AdminWishes />} />
+            </Routes>
+          </motion.div>
+
           <ScrollProgress />
           <BrandBadge />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/love-story" element={<ComingSoon title="Our Story" />} />
-            <Route path="/gallery" element={<ComingSoon title="Gallery" />} />
-            <Route path="/wishes" element={<ComingSoon title="Wishes" />} />
-            <Route path="/admin-wishes" element={<AdminWishes />} />
-          </Routes>
           <MusicToggle />
         </motion.div>
       )}

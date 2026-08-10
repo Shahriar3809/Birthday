@@ -49,10 +49,10 @@ export default function WishForm() {
               ❤️
             </motion.span>
             <p className="font-bengali mt-6 text-2xl font-semibold text-blush-100 sm:text-3xl">
-              পেয়ে গেছি
+              তোমার কথা আমি পেয়েছি।
             </p>
             <p className="font-bengali mt-2 text-sm text-blush-300/80 sm:text-base">
-              তোমার কথাটা চিরকাল রয়ে যাবে
+              তোমাকে অসংখ্য ধন্যবাদ। 
             </p>
             <button
               type="button"
@@ -73,7 +73,7 @@ export default function WishForm() {
             className="rounded-3xl border border-rose-300/20 bg-maroon-800/55 p-6 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-8"
           >
             <p className="font-bengali text-center text-lg text-blush-100/90 sm:text-xl">
-              আমাকে কিছু লিখ..
+              আমাকে কিছু বলতে চাইলে এখানে লিখে পাঠাও।
             </p>
 
             <input

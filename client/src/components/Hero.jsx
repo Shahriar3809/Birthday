@@ -5,7 +5,7 @@ import GiftBox from './GiftBox.jsx'
 import FloatingParticles from './FloatingParticles.jsx'
 import useTypewriter from '../hooks/useTypewriter.js'
 
-const HEADLINE = 'একটা সারপ্রাইজ অপেক্ষা করছে... 🎁'
+const HEADLINE = 'আজকে একটা স্পেশাল দিন... 🎁'
 
 const PALETTE = ['#c41e3a', '#e63950', '#d4af37', '#f4c2c2', '#fff5f0', '#e84a5f']
 
