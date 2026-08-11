@@ -59,7 +59,7 @@ export default function VideoMessage() {
     return (
       <section
         id="video-message"
-        className="relative py-24 text-center sm:py-32"
+        className="relative overflow-x-clip py-24 text-center sm:py-32"
         style={{ background: 'linear-gradient(180deg, #852525 0%, #5e1616 50%, #852525 100%)' }}
       >
         <div className="relative z-10 mx-auto w-full max-w-xl px-6">
@@ -80,7 +80,7 @@ export default function VideoMessage() {
     // avoid seams. Mid stop #5e1616 is Finale's mid stop.
     <section
       id="video-message"
-      className="relative py-24 text-center sm:py-32"
+      className="relative overflow-x-clip py-24 text-center sm:py-32"
       style={{ background: 'linear-gradient(180deg, #852525 0%, #5e1616 50%, #852525 100%)' }}
     >
       {/* Decoration layer — overflow is clipped ONLY here, never on the content */}
@@ -219,22 +219,42 @@ export default function VideoMessage() {
                 </motion.button>
 
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-end justify-between">
-                    {playing ? (
-                      <span className="flex h-6 items-end gap-[3px]" aria-hidden>
+                  {/* Fixed 24px-tall area: waveform + hint text share the SAME
+                      box in both states (absolutely positioned, opacity-toggled,
+                      never mounted/unmounted) so the row height and the time
+                      label never shift on play/pause. */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="relative h-6 min-w-0 flex-1">
+                      <span
+                        aria-hidden
+                        className={`pointer-events-none absolute inset-0 flex items-end gap-[3px] transition-opacity duration-200 ${
+                          playing ? 'opacity-100' : 'opacity-0'
+                        }`}
+                      >
                         {[0, 1, 2, 3].map((i) => (
                           <motion.span
                             key={i}
                             className="w-[4px] rounded-full bg-rose-400"
-                            animate={{ height: ['30%', '95%', '45%', '80%', '30%'] }}
-                            transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut', delay: i * 0.12 }}
+                            animate={playing ? { height: ['30%', '95%', '45%', '80%', '30%'] } : { height: '35%' }}
+                            transition={{
+                              duration: 1.1,
+                              repeat: playing ? Infinity : 0,
+                              ease: 'easeInOut',
+                              delay: i * 0.12,
+                            }}
                           />
                         ))}
                       </span>
-                    ) : (
-                      <span className="font-bengali text-sm text-blush-300/60">চাপ দাও, দেখতে পাবে</span>
-                    )}
-                    <span className="font-mono text-xs text-blush-300/50 tabular-nums">
+                      <span
+                        className={`pointer-events-none absolute inset-0 flex items-center overflow-hidden text-ellipsis whitespace-nowrap font-bengali text-sm text-blush-300/60 transition-opacity duration-200 ${
+                          playing ? 'opacity-0' : 'opacity-100'
+                        }`}
+                      >
+                        চাপ দাও, দেখতে পাবে
+                      </span>
+                    </div>
+
+                    <span className="shrink-0 font-mono text-xs text-blush-300/50 tabular-nums">
                       {formatTime(time)} / {formatTime(duration)}
                     </span>
                   </div>

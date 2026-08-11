@@ -31,13 +31,17 @@ export default function Finale() {
   return (
     <section
       id="finale"
-      className="relative py-24 text-center sm:py-32"
+      className="relative overflow-x-clip py-24 text-center sm:py-32"
       style={{ background: 'linear-gradient(180deg, #852525 0%, #5e1616 55%, #440d10 100%)' }}
     >
       {/* Decoration layer — overflow is clipped ONLY here, never on the content */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <FloatingParticles count={10} />
       </div>
+
+      {/* Root clips horizontal overflow-x only: the -inset-8 glow below (and
+          any decorative bleed) must never extend the document past the
+          viewport on narrow screens. Vertical content is never clipped. */}
 
       <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6">
         <motion.p

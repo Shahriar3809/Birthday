@@ -37,7 +37,7 @@ export default function Reasons() {
           transition={{ duration: 0.8, ease: EASE }}
           className="font-bengali text-3xl font-bold text-cream/95 sm:text-4xl md:text-5xl"
         >
-          যে কারণে আমি তোমাকে ভালোবাসি
+          কেনো তোমাকে ভালোবাসি
         </motion.h2>
 
         <div className="mx-auto mt-5 h-[3px] w-56 overflow-hidden rounded-full bg-rose-900/60">

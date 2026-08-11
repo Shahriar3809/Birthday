@@ -40,8 +40,15 @@
   --color-cream: #fff5f0;
 }
 
+/* Horizontal overflow safety net: `overflow-x: hidden` is the universally
+   supported fix for viewport overflow and propagates from the root element
+   to the viewport. Browsers that support `overflow: clip` upgrade to it via
+   @supports — clip avoids creating a scroll container, so scrollbars and
+   `position: sticky` behavior stay unchanged, and the fixed corner badges
+   are never affected (overflow does not establish a containing block). */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -51,6 +58,13 @@ body {
   font-family: var(--font-bengali);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: clip;
+  overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
 }

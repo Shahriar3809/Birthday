@@ -108,7 +108,7 @@ export default function AdminWishes() {
     })
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-maroon-950 via-maroon-900 to-rose-950 px-6 py-16">
+    <div className="min-h-screen overflow-x-clip bg-gradient-to-b from-maroon-950 via-maroon-900 to-rose-950 px-6 py-16">
       <div className="mx-auto w-full max-w-2xl">
         <h1 className="font-display text-center text-3xl text-blush-100">Wishes</h1>
 

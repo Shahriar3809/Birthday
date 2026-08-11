@@ -70,7 +70,7 @@ export default function CountdownTimer({ target, now, large = false }) {
           large ? 'text-3xl sm:text-5xl md:text-6xl' : 'text-3xl sm:text-4xl md:text-5xl'
         }`}
       >
-        একটা স্পেশাল দিনের অপেক্ষায়...
+        অপেক্ষা করো..
       </h2>
 
       <div className="mx-auto mt-5 h-[3px] w-56 overflow-hidden rounded-full bg-rose-900/60">
