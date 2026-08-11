@@ -125,7 +125,7 @@ function Gate() {
 
           <ScrollProgress />
           <BrandBadge label="Shanta ❤" corner="left" />
-          <BrandBadge label="Shahriar ❤" corner="right" />
+          {/* <BrandBadge label="Shahriar ❤" corner="right" /> */}
         </motion.div>
       )}
     </AnimatePresence>
