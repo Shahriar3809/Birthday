@@ -9,6 +9,11 @@ import dotenv from 'dotenv'
 dotenv.config({ path: fileURLToPath(new URL('../../.env', import.meta.url)) })
 
 const app = express()
+
+// Behind Render's proxy/load balancer, `req.ip` must trust the upstream
+// X-Forwarded-For chain or every request looks like it came from the proxy.
+app.set('trust proxy', true)
+
 const PORT = process.env.PORT || 5000
 const MONGODB_URI = process.env.MONGODB_URI
 
@@ -41,16 +46,38 @@ const Wish = mongoose.model(
     name: { type: String, default: 'Shanta', trim: true },
     message: { type: String, required: true, trim: true, maxlength: 2000 },
     submittedAt: { type: Date, default: Date.now },
+    // Soft-delete flag: documents are NEVER removed from MongoDB, they are
+    // only flagged and then hidden from normal queries.
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
+    // Submitter IP captured at POST time (only surfaced in the admin panel).
+    ipAddress: { type: String, default: '', trim: true },
   }),
 )
 
-function serializeWish(doc) {
+// IP is sensitive — only serialize it for the admin routes. The public
+// wish endpoints never include it.
+function serializeWish(doc, { includeIp = false } = {}) {
   return {
     id: String(doc._id),
     name: doc.name || 'Shanta',
     message: doc.message,
     submittedAt: doc.submittedAt.toISOString(),
+    ...(includeIp ? { ipAddress: doc.ipAddress || '' } : {}),
   }
+}
+
+// Extract the real client IP. Behind Render's proxy the X-Forwarded-For
+// header holds the original client address as the FIRST entry of a comma-
+// separated chain; fall back to req.ip (which trust proxy resolves from the
+// same header) and finally to the raw socket address.
+function getClientIp(req) {
+  const forwarded = req.get('x-forwarded-for')
+  if (forwarded) {
+    const first = forwarded.split(',')[0].trim()
+    if (first) return first
+  }
+  return req.ip || req.socket?.remoteAddress || ''
 }
 
 // ============================================================
@@ -87,8 +114,8 @@ app.get('/api/hello', (req, res) => {
 
 app.get('/api/wish', async (req, res) => {
   if (!isDbConnected()) return res.status(503).json({ error: 'Database not connected' })
-  const wishes = await Wish.find().sort({ submittedAt: -1 }).lean()
-  res.json(wishes.map(serializeWish))
+  const wishes = await Wish.find({ isDeleted: { $ne: true } }).sort({ submittedAt: -1 }).lean()
+  res.json(wishes.map((w) => serializeWish(w)))
 })
 
 app.post('/api/wish', async (req, res) => {
@@ -101,7 +128,7 @@ app.post('/api/wish', async (req, res) => {
   if (message.length > 2000) return res.status(400).json({ error: 'Wish is too long' })
 
   try {
-    const wish = await Wish.create({ name, message })
+    const wish = await Wish.create({ name, message, ipAddress: getClientIp(req) })
     res.status(201).json({ success: true, wish: serializeWish(wish) })
   } catch (err) {
     console.error('Failed to save wish:', err)
@@ -110,13 +137,38 @@ app.post('/api/wish', async (req, res) => {
 })
 
 // Admin: list wishes (password from env). Simple header auth — good enough here.
+// Soft-deleted wishes are excluded by default; they stay in MongoDB forever.
 app.get('/api/admin/wishes', async (req, res) => {
   if (!process.env.ADMIN_PASSWORD) return res.status(503).json({ error: 'ADMIN_PASSWORD not configured' })
   if (!isAdminRequest(req)) return res.status(401).json({ error: 'Unauthorized' })
   if (!isDbConnected()) return res.status(503).json({ error: 'Database not connected' })
 
-  const wishes = await Wish.find().sort({ submittedAt: -1 }).lean()
-  res.json(wishes.map(serializeWish))
+  const wishes = await Wish.find({ isDeleted: { $ne: true } }).sort({ submittedAt: -1 }).lean()
+  res.json(wishes.map((w) => serializeWish(w, { includeIp: true })))
+})
+
+// Admin: soft-delete a wish. Sets isDeleted: true only — the document is
+// NEVER removed from MongoDB (it can be inspected later via Atlas).
+app.patch('/api/admin/wishes/:id/delete', async (req, res) => {
+  if (!process.env.ADMIN_PASSWORD) return res.status(503).json({ error: 'ADMIN_PASSWORD not configured' })
+  if (!isAdminRequest(req)) return res.status(401).json({ error: 'Unauthorized' })
+  if (!isDbConnected()) return res.status(503).json({ error: 'Database not connected' })
+
+  const { id } = req.params
+  if (!mongoose.isObjectIdOrHexString(id)) return res.status(400).json({ error: 'Invalid wish id' })
+
+  try {
+    const wish = await Wish.findByIdAndUpdate(
+      id,
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true },
+    )
+    if (!wish) return res.status(404).json({ error: 'Wish not found' })
+    res.json({ success: true, id: String(wish._id) })
+  } catch (err) {
+    console.error('Failed to delete wish:', err)
+    res.status(500).json({ error: 'Could not delete wish' })
+  }
 })
 
 // Public: read the server-configured birthday moment (ISO string or null).

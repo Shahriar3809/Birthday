@@ -21,6 +21,10 @@ export default function AdminWishes() {
   const [birthdayLoading, setBirthdayLoading] = useState(false)
   const [birthdayMsg, setBirthdayMsg] = useState(null)
 
+  const [confirmId, setConfirmId] = useState(null)
+  const [deletingId, setDeletingId] = useState(null)
+  const [deleteErrorId, setDeleteErrorId] = useState(null)
+
   const loadWishes = async (pass) => {
     setLoading(true)
     setError('')
@@ -67,6 +71,32 @@ export default function AdminWishes() {
     sessionStorage.setItem('sb_admin_pass', password.trim())
     loadWishes(password.trim())
     loadBirthday()
+  }
+
+  // Soft-delete a wish: the server only sets isDeleted:true, so the document
+  // stays in MongoDB but drops out of the admin list with a fade-out.
+  const deleteWish = async (id) => {
+    setDeletingId(id)
+    setDeleteErrorId(null)
+    try {
+      const pass = sessionStorage.getItem('sb_admin_pass')
+      const res = await fetch(`/api/admin/wishes/${id}/delete`, {
+        method: 'PATCH',
+        headers: { 'x-admin-password': pass },
+      })
+      if (res.status === 401) {
+        sessionStorage.removeItem('sb_admin_pass')
+        setWishes(null)
+        return
+      }
+      if (!res.ok) throw new Error('bad status')
+      setWishes((prev) => (prev || []).filter((w) => w.id !== id))
+      setConfirmId(null)
+    } catch {
+      setDeleteErrorId(id)
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   const saveBirthday = async (e) => {
@@ -217,22 +247,78 @@ export default function AdminWishes() {
                   এখনো কোনো wish আসেনি
                 </li>
               )}
-              {wishes.map((w) => (
-                <li
-                  key={w.id}
-                  className="rounded-2xl border border-rose-300/20 bg-maroon-800/55 p-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
-                >
-                  <div className="flex items-baseline justify-between gap-4">
-                    <span className="font-bengali text-sm font-semibold text-gold-400">
-                      {w.name || 'Shanta'}
-                    </span>
-                    <span className="font-bengali text-xs text-blush-300/70">
-                      {formatDate(w.submittedAt)}
-                    </span>
-                  </div>
-                  <p className="font-bengali mt-2 text-cream/95">{w.message}</p>
-                </li>
-              ))}
+              <AnimatePresence>
+                {wishes.map((w) => (
+                  <motion.li
+                    key={w.id}
+                    layout
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="rounded-2xl border border-rose-300/20 bg-maroon-800/55 p-5 shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bengali text-sm font-semibold text-gold-400">
+                          {w.name || 'Shanta'}
+                        </p>
+                        <p className="font-bengali mt-1 text-xs text-blush-300/70">
+                          {formatDate(w.submittedAt)}
+                        </p>
+                        {w.ipAddress && (
+                          <p className="font-mono mt-0.5 text-[11px] text-blush-300/45">
+                            IP · {w.ipAddress}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmId(confirmId === w.id ? null : w.id)}
+                        disabled={deletingId === w.id}
+                        aria-label="এই wish টা মুছে ফেলো"
+                        title="মুছে ফেলো"
+                        className="font-bengali shrink-0 rounded-full border border-rose-300/15 px-3 py-1.5 text-xs text-rose-300/60 transition-colors hover:border-rose-400/40 hover:text-rose-300 disabled:opacity-40"
+                      >
+                        🗑️ মুছে ফেলো
+                      </button>
+                    </div>
+
+                    <p className="font-bengali mt-3 text-cream/95">{w.message}</p>
+
+                    {confirmId === w.id && (
+                      <div className="mt-3 rounded-xl border border-rose-300/20 bg-maroon-950/70 p-3">
+                        <p className="font-bengali text-xs text-blush-300/85">
+                          এই মেসেজটা মুছে ফেলতে চাও?
+                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => deleteWish(w.id)}
+                            disabled={deletingId === w.id}
+                            className="font-bengali rounded-full bg-gradient-to-br from-rose-500 to-rose-700 px-4 py-1.5 text-xs font-semibold text-cream disabled:opacity-40"
+                          >
+                            {deletingId === w.id ? 'মোছা হচ্ছে...' : 'হ্যাঁ'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmId(null)}
+                            disabled={deletingId === w.id}
+                            className="font-bengali rounded-full border border-rose-300/30 px-4 py-1.5 text-xs text-blush-300/80 disabled:opacity-40"
+                          >
+                            বাতিল
+                          </button>
+                          {deleteErrorId === w.id && (
+                            <span className="font-bengali text-xs text-rose-300">
+                              মোছা যায়নি
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </motion.li>
+                ))}
+              </AnimatePresence>
             </ul>
           </>
         )}
