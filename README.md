@@ -58,7 +58,7 @@ shanta-birthday/
 │   │   ├── assets/      # photos (shanta.jpg, memories/*.jpg)
 │   │   ├── pages/       # Home, ComingSoon, AdminWishes (secret)
 │   │   └── index.css    # theme tokens (Tailwind v4 @theme)
-│   ├── public/          # favicon, media (music, voice note)
+│   ├── public/          # favicon, media (voice note, video)
 │   └── dist/            # production build (generated, gitignored)
 └── server/              # Express server
     ├── src/index.js     # static serving + /api/wish + /api/admin/wishes + /api/settings/birthday + SPA fallback

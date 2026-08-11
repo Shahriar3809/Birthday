@@ -15,8 +15,8 @@ const VIDEO_SRC = '/media/shanta.mp4'
 // ============================================================
 // ✏️ EDIT ME — heading + subtitle.
 // ============================================================
-const HEADING = 'এই গানটি তোমাকে উৎসর্গ করলাম.. 🎬'
-const SUBTEXT = 'চোখ বন্ধ করো, কানে হেডফোন লাগিয়ে শুনো...'
+const HEADING = 'গানটি তোমাকে উৎসর্গ করলাম.. 🎬'
+const SUBTEXT = 'I LOVE YOU MORE THAN I CAN SAY.. ❤️'
 
 function formatTime(t) {
   if (!Number.isFinite(t)) return '0:00'

@@ -5,7 +5,6 @@ import Home from './pages/Home.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import AdminWishes from './pages/AdminWishes.jsx'
 import CountdownGate from './components/CountdownGate.jsx'
-import MusicToggle from './components/MusicToggle.jsx'
 import BrandBadge from './components/BrandBadge.jsx'
 import ScrollProgress from './components/ScrollProgress.jsx'
 import { getBirthdayTarget } from './data/birthday.js'
@@ -105,7 +104,7 @@ function Gate() {
           className="min-h-svh"
         >
           {/* Content scale-in lives on an INNER wrapper. The fixed chrome
-              below (progress bar, badge, music) must never sit under a
+              below (progress bar, corner badges) must never sit under a
               transform: a `transform` on any ancestor makes `position:
               fixed` anchor to that ancestor instead of the viewport. Opacity
               alone does not create a containing block, so it is safe here. */}
@@ -125,8 +124,8 @@ function Gate() {
           </motion.div>
 
           <ScrollProgress />
-          <BrandBadge />
-          <MusicToggle />
+          <BrandBadge label="Shanta ❤" corner="left" />
+          <BrandBadge label="Shahriar ❤" corner="right" />
         </motion.div>
       )}
     </AnimatePresence>
