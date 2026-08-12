@@ -9,7 +9,7 @@ const HEADLINE = 'আজকে একটা স্পেশাল দিন... �
 
 const PALETTE = ['#c41e3a', '#e63950', '#d4af37', '#f4c2c2', '#fff5f0', '#e84a5f']
 
-export default function Hero() {
+export default function Hero({ onOpen = () => {} }) {
   const [status, setStatus] = useState('closed')
   const { text, done } = useTypewriter(HEADLINE)
   const opened = status !== 'closed'
@@ -52,13 +52,9 @@ export default function Hero() {
   const handleOpen = () => {
     if (opened) return
     setStatus('opening')
+    onOpen()
     timers.current.push(setTimeout(fireConfetti, 480))
-    timers.current.push(
-      setTimeout(() => {
-        setStatus('opened')
-        document.getElementById('birthday-message')?.scrollIntoView({ behavior: 'smooth' })
-      }, 1500)
-    )
+    timers.current.push(setTimeout(() => setStatus('opened'), 1500))
   }
 
   return (

@@ -6,17 +6,20 @@ import Countdown from '../components/Countdown.jsx'
 import Finale from '../components/Finale.jsx'
 import VideoMessage from '../components/VideoMessage.jsx'
 
-export default function Home() {
+export default function Home({ revealed = true, onOpen }) {
   return (
     <main>
-      <Hero />
-      <BirthdayMessage />
-      <Memories />
-      <Reasons />
-      <Countdown />
-      <VideoMessage />
-      <Finale />
-      
+      <Hero onOpen={onOpen} />
+      {revealed && (
+        <>
+          <BirthdayMessage />
+          <Memories />
+          <Reasons />
+          <Countdown />
+          <VideoMessage />
+          <Finale />
+        </>
+      )}
     </main>
   )
 }

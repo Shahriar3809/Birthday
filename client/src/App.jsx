@@ -5,6 +5,7 @@ import Home from './pages/Home.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import AdminWishes from './pages/AdminWishes.jsx'
 import CountdownGate from './components/CountdownGate.jsx'
+import BalloonBurst from './components/BalloonBurst.jsx'
 import BrandBadge from './components/BrandBadge.jsx'
 import ScrollProgress from './components/ScrollProgress.jsx'
 import { getBirthdayTarget } from './data/birthday.js'
@@ -22,6 +23,18 @@ function Gate() {
   const [target, setTarget] = useState(() => getBirthdayTarget(new Date()))
   const [targetReady, setTargetReady] = useState(false)
   const [hasUnlocked, setHasUnlocked] = useState(false)
+
+  // Two-step reveal: after the countdown gate unlocks, only the hero (gift
+  // box) is shown. Tapping "খুলে দেখো" plays the opening + balloon burst;
+  // once the burst completes, `siteRevealed` mounts the rest of the page,
+  // unlocks scrolling, and auto-scrolls down to the birthday message.
+  const [siteRevealed, setSiteRevealed] = useState(false)
+  const [balloonBurst, setBalloonBurst] = useState(false)
+
+  const handleOpen = () => {
+    if (siteRevealed) return
+    setBalloonBurst(true)
+  }
 
   // Fetch the DB-driven birthday once. On failure (or nothing set) we keep the
   // static config — the gate must never break because the DB is unreachable.
@@ -63,13 +76,17 @@ function Gate() {
 
   const showGate = targetReady && !hasUnlocked && !isAdminRoute
 
-  // Lock body scroll while the gate is up so nothing behind it can scroll.
+  // Lock body scroll while the gate is up, and again during the hero-only
+  // stage after it dismisses, so nothing hidden behind the hero can scroll.
+  // Unlocked once "খুলে দেখো" completes and the full page is mounted.
+  const lockScroll = showGate || (!siteRevealed && !isAdminRoute)
+
   useEffect(() => {
     const html = document.documentElement
     const body = document.body
     const prevHtml = html.style.overflow
     const prevBody = body.style.overflow
-    if (showGate) {
+    if (lockScroll) {
       html.style.overflow = 'hidden'
       body.style.overflow = 'hidden'
     }
@@ -77,7 +94,26 @@ function Gate() {
       html.style.overflow = prevHtml
       body.style.overflow = prevBody
     }
-  }, [showGate])
+  }, [lockScroll])
+
+  // After the celebration finishes and the rest of the sections are mounted,
+  // smooth-scroll down to the birthday message so the user isn't left staring
+  // at the hero. This effect runs only once `siteRevealed` flips true — the
+  // scroll-lock effect above has already restored `overflow` by then, and the
+  // short delay lets layout settle (fonts/images) so the target's final
+  // position is correct. No-op on routes where the section isn't mounted.
+  useEffect(() => {
+    if (!siteRevealed) return
+    let cancelled = false
+    const timer = window.setTimeout(() => {
+      if (cancelled) return
+      document.getElementById('birthday-message')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 150)
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [siteRevealed])
 
   // While the DB-driven target is still loading, render nothing on public
   // routes so birthday content can never leak even briefly; the admin route
@@ -115,7 +151,7 @@ function Gate() {
             className="min-h-svh"
           >
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home revealed={siteRevealed} onOpen={handleOpen} />} />
               <Route path="/love-story" element={<ComingSoon title="Our Story" />} />
               <Route path="/gallery" element={<ComingSoon title="Gallery" />} />
               <Route path="/wishes" element={<ComingSoon title="Wishes" />} />
@@ -126,6 +162,14 @@ function Gate() {
           <ScrollProgress />
           <BrandBadge label="Shanta ❤" corner="left" />
           <BrandBadge label="Shahriar ❤" corner="right" />
+          {balloonBurst && (
+            <BalloonBurst
+              onComplete={() => {
+                setBalloonBurst(false)
+                setSiteRevealed(true)
+              }}
+            />
+          )}
         </motion.div>
       )}
     </AnimatePresence>
